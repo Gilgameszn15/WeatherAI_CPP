@@ -87,15 +87,19 @@ void GeminiClient::onReplyFinished(QNetworkReply *reply) {
         
         emit errorOccurred("Nie udało się sparsować odpowiedzi od Gemini.");
     } else {
-        // --- TA CZĘŚĆ JEST KLUCZOWA DO DEBUGOWANIA ---
-        QByteArray errorData = reply->readAll();
-        qDebug() << "PEŁNY BŁĄD GEMINI:" << errorData; // To pokaże nam co mówi Google!
+        if (reply->error() == QNetworkReply::ConnectionRefusedError || reply->error() == QNetworkReply::HostNotFoundError) {
+            emit errorOccurred("Brak internetu lub serwer Google Gemini jest niedostępny. Sprawdź swoje połączenie sieciowe.");
+        } else {
+            // --- TA CZĘŚĆ JEST KLUCZOWA DO DEBUGOWANIA ---
+            QByteArray errorData = reply->readAll();
+            qDebug() << "PEŁNY BŁĄD GEMINI:" << errorData; // To pokaże nam co mówi Google!
 
-        QString errorMsg = "Błąd API: " + reply->errorString();
-        if (!errorData.isEmpty()) {
-            errorMsg += " | Szczegóły: " + QString::fromUtf8(errorData);
+            QString errorMsg = "Błąd API: " + reply->errorString();
+            if (!errorData.isEmpty()) {
+                errorMsg += " | Szczegóły: " + QString::fromUtf8(errorData);
+            }
+            emit errorOccurred(errorMsg);
         }
-        emit errorOccurred(errorMsg);
     }
     reply->deleteLater();
 }

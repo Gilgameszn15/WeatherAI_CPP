@@ -38,7 +38,11 @@ void OllamaClient::onReplyFinished(QNetworkReply *reply) {
         emit responseReceived(responseText);
     } else {
         // Obsługa braku łączności (wymóg na 5.0) [cite: 27, 28, 59]
-        emit errorOccurred("Błąd połączenia z Ollama: " + reply->errorString());
+        if (reply->error() == QNetworkReply::ConnectionRefusedError || reply->error() == QNetworkReply::HostNotFoundError) {
+            emit errorOccurred("Brak połączenia z lokalnym modelem Ollama. Upewnij się, że program Ollama jest włączony i model pobrany.");
+        } else {
+            emit errorOccurred("Błąd połączenia z Ollama: " + reply->errorString());
+        }
     }
     reply->deleteLater();
 }

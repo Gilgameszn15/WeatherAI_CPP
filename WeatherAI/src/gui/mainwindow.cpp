@@ -20,6 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     // Inicjalizacja klienta Gemini
     geminiClient = new GeminiClient(this);
 
+    // Inicjalizacja wykonawcy skryptów
+    scriptExecutor = new ScriptExecutor(this);
+    connect(scriptExecutor, &ScriptExecutor::scriptFinished, this, &MainWindow::onScriptFinished);
+
     // Połączenie sygnałów dla Bielika
     connect(aiClient, &OllamaClient::responseReceived, this, &MainWindow::handleAIResponse);
     connect(aiClient, &OllamaClient::errorOccurred, this, &MainWindow::handleAIError);
@@ -112,13 +116,9 @@ void MainWindow::handleAIResponse(const QString &response) {
         QString codeOnly = match.captured(1).trimmed(); // Sam kod bez tagów
 
         // Uruchamiamy skrypt (przesyłamy sam wycięty kod do ScriptExecutor)
-        ui->statusbar->showMessage("Uruchamiam silnik graficzny...");
-        if (ScriptExecutor::runPythonScript(codeOnly)) { // Zmienimy funkcję, żeby brała czysty kod
-            QPixmap chart("wykres.png");
-            if (!chart.isNull()) {
-                ui->chartDisplay->setPixmap(chart.scaled(ui->chartDisplay->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            }
-        }
+        ui->statusbar->showMessage("Uruchamiam asynchronicznie silnik graficzny (Python)...");
+        ui->checkWeatherButton->setEnabled(false);
+        scriptExecutor->runPythonScript(codeOnly);
 
         // Usuwamy CAŁY dopasowany blok (razem z tagami) z tekstu dla usera
         userText.remove(match.captured(0));
@@ -137,6 +137,28 @@ void MainWindow::handleAIResponse(const QString &response) {
     QString html = "<html><style>body{color:white;font-family:sans-serif;} b{color:#55aaff;}</style>"
                    "<body>" + userText + "</body></html>";
     ui->responseText->setHtml(html);
+    
+    // Jeśli nie wyłapano kodu Pythona do uruchomienia, odblokowujemy przycisk
+    if (!match.hasMatch()) {
+        ui->checkWeatherButton->setEnabled(true);
+        ui->statusbar->showMessage("Gotowy do pracy.");
+    }
+}
+
+/**
+ * @brief Slot wywoływany po zakończeniu działania skryptu
+ */
+void MainWindow::onScriptFinished(bool success, const QString &error) {
+    if (success) {
+        QPixmap chart("wykres.png");
+        if (!chart.isNull()) {
+            ui->chartDisplay->setPixmap(chart.scaled(ui->chartDisplay->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+        ui->statusbar->showMessage("Gotowy do pracy.");
+    } else {
+        QMessageBox::warning(this, "Błąd skryptu", error);
+        ui->statusbar->showMessage("Nie udało się wygenerować wykresu.");
+    }
     ui->checkWeatherButton->setEnabled(true);
 }
 

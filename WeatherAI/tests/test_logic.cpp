@@ -18,16 +18,19 @@ private slots:
 
         QTest::newRow("Poprawny kod") << "Tekst [PYTHON]print('test')[/PYTHON]" << true;
         QTest::newRow("Brak znaczników") << "Tylko zwykły tekst bez kodu." << false;
-        QTest::newRow("Błędne znaczniki") << "[PYTHON] Nie zamknięty tag" << false;
+        QTest::newRow("Brak zamknięcia (nowy regex to łapie)") << "Jakiś tekst [PYTHON] niezamknięty kod..." << true;
     }
 
     void testScriptExtraction() {
         QFETCH(QString, input);
         QFETCH(bool, expectedResult);
 
-        // Testujemy czy funkcja poprawnie reaguje na dane wejściowe
-        // (W rzeczywistym teście nie chcemy odpalać Pythona, więc testujemy tylko logikę wycinania)
-        bool result = (input.contains("[PYTHON]") && input.contains("[/PYTHON]"));
+        // Używamy tego samego wyrażenia regularnego, co w MainWindow
+        QRegularExpression pythonRegex("\\[PYTHON\\](.*?)(?:\\[/PYTHON\\]|$)",
+                                       QRegularExpression::DotMatchesEverythingOption |
+                                       QRegularExpression::CaseInsensitiveOption);
+        QRegularExpressionMatch match = pythonRegex.match(input);
+        bool result = match.hasMatch();
         QCOMPARE(result, expectedResult);
     }
 };

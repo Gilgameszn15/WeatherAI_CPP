@@ -9,6 +9,7 @@
 #include <QMainWindow>
 #include "ollamaclient.h"
 #include "geminiclient.h"
+#include "../logic/scriptexecutor.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -46,10 +47,18 @@ private slots:
      */
     void handleAIError(const QString &error);
 
+    /**
+     * @brief Slot wywoływany po zakończeniu asynchronicznego skryptu Pythona.
+     * @param success Czy skrypt zakończył się poprawnie i wygenerował wykres.
+     * @param error Opcjonalny komunikat błędu.
+     */
+    void onScriptFinished(bool success, const QString &error);
+
 private:
     Ui::MainWindow *ui; ///< Wskaźnik na elementy interfejsu użytkownika.
     OllamaClient *aiClient; ///< Instancja klienta komunikującego się z AI.
     GeminiClient *geminiClient; ///< Instancja klienta komunikującego się z Google Gemini.
+    ScriptExecutor *scriptExecutor; ///< Instancja wykonawcy skryptów.
 };
 
 #endif
