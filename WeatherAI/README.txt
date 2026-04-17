@@ -1,5 +1,5 @@
 Projekt: WeatherAI (Pogodynka AI)
-Autor: [Twoje Imię i Nazwisko / Nr albumu - DO UZUPEŁNIENIA]
+Autor: Patryk Nalewalski  Nr albumu 164298
 
 Opis:
 Aplikacja C++ (Qt) wykorzystująca duże modele językowe do generowania opisów pogody, ciekawostek o podanym mieście oraz automatycznego tworzenia i wykonywania skryptów Python rysujących wykresy (Prognoza na dziś i Średnie temperatury roczne).
