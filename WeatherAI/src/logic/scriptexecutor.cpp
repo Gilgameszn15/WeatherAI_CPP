@@ -16,49 +16,23 @@
  * * @param fullResponse Surowa odpowiedź od modelu AI.
  * @return true Jeśli skrypt zakończył się sukcesem, false w przeciwnym razie.
  */
-bool ScriptExecutor::runPythonScript(const QString &fullResponse) {
-    // 1. Sprzątanie przed startem
-    if (QFile::exists("wykres.png")) {
-        QFile::remove("wykres.png");
-    }
+bool ScriptExecutor::runPythonScript(const QString &pureCode) {
+    if (QFile::exists("wykres.png")) QFile::remove("wykres.png");
 
-    // 2. Szukanie znaczników logicznych
-    int startTag = fullResponse.indexOf("[PYTHON]");
-    int endTag = fullResponse.indexOf("[/PYTHON]");
+    // Jeśli AI dodało śmieciowe grawisy wewnątrz tagów, czyścimy je
+    QString finalCode = pureCode;
+    finalCode.remove("```python");
+    finalCode.remove("```");
 
-    if (startTag == -1 || endTag == -1) {
-        qDebug() << "Błąd: Nie znaleziono znaczników [PYTHON] w odpowiedzi.";
-        return false;
-    }
-
-    // Wycinanie zawartości tagów
-    QString code = fullResponse.mid(startTag + 8, endTag - (startTag + 8)).trimmed();
-
-    // 3. SANITIZACJA KODU (Usuwanie ```python ... ```)
-    // Jeśli AI dodało formatowanie Markdown, musimy je usunąć przed zapisem do .py
-    if (code.startsWith("```")) {
-        int firstNewLine = code.indexOf("\n");
-        if (firstNewLine != -1) {
-            code = code.mid(firstNewLine).trimmed(); // Usuwa linię "```python"
-        }
-    }
-    if (code.endsWith("```")) {
-        code.chop(3); // Usuwa końcowe "```"
-        code = code.trimmed();
-    }
-
-    // 4. Zapis do pliku tymczasowego
     QFile file("generated_chart.py");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
-
     QTextStream out(&file);
-    out << code;
+    out << finalCode.trimmed();
     file.close();
 
-    // 5. Uruchomienie interpretera
-    QProcess pythonProcess;
-    pythonProcess.start("python", QStringList() << "generated_chart.py");
+    QProcess py;
+    py.start("python", QStringList() << "generated_chart.py");
+    py.waitForFinished(30000);
 
-    // Czekamy 30s na zakończenie (matplotlib czasem startuje powoli)
-    return pythonProcess.waitForFinished(30000);
+    return QFile::exists("wykres.png"); // Jeśli plik powstał, to sukces
 }

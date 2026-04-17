@@ -19,6 +19,8 @@ set(APP_SOURCES
     main.cpp
     src/api/ollamaclient.cpp
     src/api/ollamaclient.h
+    src/api/geminiclient.cpp
+    src/api/geminiclient.h
     src/gui/mainwindow.cpp
     src/gui/mainwindow.h
     src/gui/mainwindow.ui

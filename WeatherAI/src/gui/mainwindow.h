@@ -8,6 +8,7 @@
 
 #include <QMainWindow>
 #include "ollamaclient.h"
+#include "geminiclient.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -16,7 +17,8 @@ QT_END_NAMESPACE
 /**
  * @class MainWindow
  * @brief Klasa zarządzająca interfejsem użytkownika.
- * * Obsługuje interakcje z użytkownikiem, wyświetlanie danych
+ *
+ * Obsługuje interakcje z użytkownikiem, wyświetlanie danych
  * oraz prezentację wygenerowanych wykresów.
  */
 class MainWindow : public QMainWindow {
@@ -47,6 +49,7 @@ private slots:
 private:
     Ui::MainWindow *ui; ///< Wskaźnik na elementy interfejsu użytkownika.
     OllamaClient *aiClient; ///< Instancja klienta komunikującego się z AI.
+    GeminiClient *geminiClient; ///< Instancja klienta komunikującego się z Google Gemini.
 };
 
 #endif

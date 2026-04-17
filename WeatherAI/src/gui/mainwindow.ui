@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1201</width>
+    <height>804</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,9 +42,70 @@
        </layout>
       </item>
       <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Wpisz poniżej nazwę miejscowości:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLineEdit" name="cityInput">
         <property name="placeholderText">
          <string>Wpisz tutaj nazwę miejscowości</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Opisz w jakim stylu chcesz dostać zapytanie, np. profesjonalny, zabawny, krótki, długi itd.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="styleInput">
+        <property name="placeholderText">
+         <string>Wpisz tutaj opis stylu</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>O czym chciałbyś usłyszeć ciekawostkę?</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QRadioButton" name="radioCity">
+           <property name="text">
+            <string>Miejscowość</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioPerson">
+           <property name="text">
+            <string>Znana osoba z miejscowości</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioRegion">
+           <property name="text">
+            <string>O regionie</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="geminiCheck">
+        <property name="text">
+         <string>Użyj Gemini Online</string>
         </property>
        </widget>
       </item>
@@ -64,7 +125,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1201</width>
      <height>21</height>
     </rect>
    </property>
