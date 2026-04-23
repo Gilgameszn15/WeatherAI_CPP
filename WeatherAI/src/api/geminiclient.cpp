@@ -90,9 +90,8 @@ void GeminiClient::onReplyFinished(QNetworkReply *reply) {
         if (reply->error() == QNetworkReply::ConnectionRefusedError || reply->error() == QNetworkReply::HostNotFoundError) {
             emit errorOccurred("Brak internetu lub serwer Google Gemini jest niedostępny. Sprawdź swoje połączenie sieciowe.");
         } else {
-            // --- TA CZĘŚĆ JEST KLUCZOWA DO DEBUGOWANIA ---
             QByteArray errorData = reply->readAll();
-            qDebug() << "PEŁNY BŁĄD GEMINI:" << errorData; // To pokaże nam co mówi Google!
+            qDebug() << "PEŁNY BŁĄD GEMINI:" << errorData;
 
             QString errorMsg = "Błąd API: " + reply->errorString();
             if (!errorData.isEmpty()) {

@@ -9,12 +9,11 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 1. Szukamy wszystkich potrzebnych modułów Qt
+# Szukamy wszystkich potrzebnych modułów Qt
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network Test)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network Test)
 
-# 2. Definiujemy źródła TYLKO dla głównej aplikacji
-# USUNĄŁEM stąd tests/test_logic.cpp
+# Definiujemy źródła dla głównej aplikacji
 set(APP_SOURCES
     main.cpp
     src/api/ollamaclient.cpp
@@ -28,10 +27,10 @@ set(APP_SOURCES
     src/logic/scriptexecutor.h
 )
 
-# 3. Informujemy CMake, gdzie szukać nagłówków
+# Informujemy CMake, gdzie szukać nagłówków
 include_directories(src/api src/gui src/logic)
 
-# 4. Tworzymy główny program WeatherAI
+# Tworzymy główny program WeatherAI
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(WeatherAI
         MANUAL_FINALIZATION
@@ -45,13 +44,12 @@ else()
     endif()
 endif()
 
-# 5. Linkujemy biblioteki dla głównej aplikacji
+# Linkujemy biblioteki dla głównej aplikacji
 target_link_libraries(WeatherAI PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Network
 )
 
-# --- Ustawienia systemowe (macOS/Windows) ---
 if(${QT_VERSION} VERSION_LESS 6.1.0)
   set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.WeatherAI)
 endif()
@@ -64,7 +62,7 @@ set_target_properties(WeatherAI PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-# --- Konfiguracja testów - OSOBNY CEL (WeatherTests) ---
+# Konfiguracja testów
 enable_testing()
 
 add_executable(WeatherTests

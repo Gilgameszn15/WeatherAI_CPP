@@ -17,8 +17,8 @@ private slots:
         QTest::addColumn<bool>("expectedResult");
 
         QTest::newRow("Poprawny kod") << "Tekst [PYTHON]print('test')[/PYTHON]" << true;
-        QTest::newRow("Brak znaczników") << "Tylko zwykły tekst bez kodu." << false;
-        QTest::newRow("Brak zamknięcia (nowy regex to łapie)") << "Jakiś tekst [PYTHON] niezamknięty kod..." << true;
+        QTest::newRow("Brak znacznikow") << "Tylko zwykly tekst bez kodu." << false;
+        QTest::newRow("Brak zamkniecia (nowy regex to lapie)") << "Jakis tekst [PYTHON] niezamkniety kod..." << true;
     }
 
     void testScriptExtraction() {

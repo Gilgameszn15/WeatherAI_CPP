@@ -7,12 +7,23 @@
 #include <QDir>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
+#include <QIcon>
 /**
  * @brief Konstruktor okna głównego.
  */
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+    this->setWindowTitle("WeatherAI"); // Ustawienie nazwy okna aplikacji
+    this->setWindowIcon(QIcon("favicon.png")); // Ustawienie ikony okna
+
+    // Ustawienie białego koloru czcionki oraz widocznych obramowań i wypełnień samych znaczników (kółeczek/kwadracików)
+    this->setStyleSheet(
+        "QRadioButton, QCheckBox, QGroupBox { color: white; }"
+        "QRadioButton::indicator, QCheckBox::indicator { border: 1px solid white; background-color: #222; width: 14px; height: 14px; }"
+        "QRadioButton::indicator { border-radius: 7px; }"
+        "QRadioButton::indicator:checked, QCheckBox::indicator:checked { background-color: white; }"
+    );
 
     // Inicjalizacja klienta AI (Bielik/Ollama)
     aiClient = new OllamaClient(this);
@@ -52,11 +63,11 @@ void MainWindow::on_checkWeatherButton_clicked() {
         return;
     }
 
-    // 1. Pobieramy styl z pola tekstowego (jeśli pusty, dajemy domyślny)
+    // Pobieramy styl z pola tekstowego (jeśli pusty, dajemy domyślny)
     QString style = ui->styleInput->text();
     if (style.isEmpty()) style = "ekspercki, ale przystępny";
 
-    // 2. Ustalamy o czym ma być ciekawostka (Radio Buttons)
+    // Ustalamy o czym ma być ciekawostka (Radio Buttons)
     QString curiositySubject;
     if (ui->radioPerson->isChecked()) {
         curiositySubject = "znanej osobie pochodzącej z tego miasta";
@@ -66,7 +77,7 @@ void MainWindow::on_checkWeatherButton_clicked() {
         curiositySubject = "historii tego miasta";
     }
 
-    // 3. Budujemy dynamiczny System Prompt - klucz do V 2.0
+    // Budujemy dynamiczny System Prompt
     QString systemPrompt = QString(
                                "Jesteś inteligentnym asystentem. TWOIM ABSOLUTNYM OBOWIĄZKIEM jest trzymać się formatu, "
                                "ale używać stylu: %1.\n\n"
@@ -84,7 +95,7 @@ void MainWindow::on_checkWeatherButton_clicked() {
                                "Pamiętaj: Nawet jeśli piszesz jako %1, musisz użyć słów OPIS:, CIEKAWOSTKA:, PORADA: oraz znaczników [PYTHON] i [/PYTHON]."
                                ).arg(style, city, curiositySubject);
 
-    // 4. Logika wyboru modelu (Bielik vs Gemini)
+    // Logika wyboru modelu (Bielik vs Gemini)
     if (ui->geminiCheck->isChecked()) {
         ui->statusbar->showMessage("Wysyłam zapytanie do Gemini (" + style + ") online...");
         geminiClient->sendRequest("Opowiedz mi o: " + city, systemPrompt);
@@ -104,7 +115,7 @@ void MainWindow::handleAIResponse(const QString &response) {
     ui->chartDisplay->clear();
     QString userText = response;
 
-    // 1. WYCINANIE REGEKSOWE (Pancerne)
+    // WYCINANIE REGEKSOWE
     // Szukamy wszystkiego między [PYTHON] a [/PYTHON] (lub do końca stringa), ignorując wielkość liter i entery
     QRegularExpression pythonRegex("\\[PYTHON\\](.*?)(?:\\[/PYTHON\\]|$)",
                                    QRegularExpression::DotMatchesEverythingOption |
@@ -124,11 +135,11 @@ void MainWindow::handleAIResponse(const QString &response) {
         userText.remove(match.captured(0));
     }
 
-    // 2. CZYSZCZENIE RESZTEK (Dla pewności gdyby AI użyło grawisów ```)
+    // CZYSZCZENIE RESZTEK (Dla pewności gdyby AI użyło grawisów ```)
     userText.remove("```python", Qt::CaseInsensitive);
     userText.remove("```");
 
-    // 3. Nagłówki i HTML
+    // Nagłówki i HTML
     userText.replace("OPIS:", "<b>🌍 OPIS KLIMATU</b><br>");
     userText.replace("CIEKAWOSTKA:", "<br><b>📜 CIEKAWOSTKA HISTORYCZNA</b><br>");
     userText.replace("PORADA:", "<br><b>👔 JAK SIĘ DZISIAJ UBRAĆ?</b><br>");
